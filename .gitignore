@@ -1,0 +1,23 @@
+# Unreal Engine generated
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Backup/
+.vs/
+*.sln
+*.slnx
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+UpgradeLog.htm
+*.log
+
+# Local tooling
+.claude/
+
+# Per-user content
+Content/Developers/
+Content/Collections/

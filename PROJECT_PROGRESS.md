@@ -59,7 +59,7 @@ No other characters are established.
 | Tool | Version |
 |---|---|
 | Unreal Engine | 5.8.4 (`EngineAssociation` is `5.8` in `TheLastMessage.uproject`) |
-| Visual Studio | ❓ Not confirmed. The `.vs/v18` folder suggests the Visual Studio 2026 generation; verify in Visual Studio → Help → About |
+| Visual Studio | Community 2026 18.11.3 at `E:\VisualStudio`; MSVC 14.51.36231/36260; Windows SDK 10.0.26100.0 (✅ confirmed during M1 build) |
 | Rendering RHI | DirectX 12 (`DefaultEngine.ini`) |
 | Git LFS | 3.7.1 |
 
@@ -87,9 +87,13 @@ No other characters are established.
 
 **`.gitignore`:** `Binaries/`, `Intermediate/`, `Saved/`, `DerivedDataCache/`, `Backup/`, `.vs/`, `*.sln`/`*.slnx`, `.claude/`, `Content/Developers/`, `Content/Collections/`, plus VS temp files.
 
-**Uncommitted at this checkpoint (📝 awaiting review and approval):**
-- `GAME_DESIGN_DOCUMENT.md` (new, untracked)
-- `PROJECT_PROGRESS.md` (modified, this file)
+Latest pushed commit: `e560345` "Add Game Design Document and update progress checkpoint" (GDD v0.3 + progress file).
+
+**Uncommitted at this checkpoint (📝 M1 awaiting review and approval; nothing staged):**
+- Modified: `GAME_DESIGN_DOCUMENT.md`, `PROJECT_PROGRESS.md`
+- New: `Source/TheLastMessage/Core/` (6 files), `Source/TheLastMessage/Tests/TLMFrameworkTests.cpp`, `Content/Core/Input/` (3 assets), `Content/Core/Blueprints/` (3 assets), `Content/Dev/Maps/L_Dev_Movement.umap`. All 7 new binary assets are matched by the Git LFS filter.
+
+**Known quirk:** UBT's Visual Studio workspace generator can rewrite `.vsconfig` (it writes VS2022-format component ids). If it changes, restore it with `git restore -- .vsconfig`; do not commit that change.
 
 ## 6. Claude Code and Unreal MCP setup
 
@@ -139,7 +143,7 @@ Type-based top-level folders; chapter-specific folders are added only when each 
 
 Left untouched: `/Game/Collections`, `/Game/Developers`.
 
-**Naming conventions (✅):** `BP_` Blueprint · `SM_` Static Mesh · `M_` Material · `MI_` Material Instance · `T_` Texture · `WBP_` Widget Blueprint · `DA_` Data Asset · `L_` Level · `LS_` Level Sequence.
+**Naming conventions (✅):** `BP_` Blueprint · `SM_` Static Mesh · `M_` Material · `MI_` Material Instance · `T_` Texture · `WBP_` Widget Blueprint · `DA_` Data Asset · `L_` Level · `LS_` Level Sequence · `IA_` Input Action · `IMC_` Input Mapping Context (the last two added with the M1 approval).
 
 **Architecture principle (✅):**
 - C++ owns the rules (chapter state, save/load, choice and flag tracking, ending resolution, interaction interface, inventory/evidence logic, base framework classes).
@@ -160,8 +164,11 @@ Left untouched: `/Game/Collections`, `/Game/Developers`.
 |---|---|---|
 | Level | `/Game/Maps/L_Prototype` | Active level. 7 default system actors plus `SM_TestCube` (8 actors). Saved. |
 | Material | `/Game/Materials/M_TestCube` | Test material applied to `SM_TestCube`. |
+| Level | `/Game/Dev/Maps/L_Dev_Movement` | M1 movement test map (see Section 14). |
+| Input | `/Game/Core/Input/` | `IA_Move`, `IA_Look`, `IMC_Default`. |
+| Blueprints | `/Game/Core/Blueprints/` | `BP_TLMGameMode`, `BP_TLMPlayerController`, `BP_TLMPlayerCharacter`. |
 
-C++ module (unchanged template): `Source/TheLastMessage/` with `TheLastMessage.Build.cs`, `TheLastMessage.cpp`, `TheLastMessage.h`, plus `TheLastMessage.Target.cs` and `TheLastMessageEditor.Target.cs` in `Source/`. No game classes exist yet. Dependencies: `Core`, `CoreUObject`, `Engine`, `InputCore`, `EnhancedInput`.
+C++ module: `Source/TheLastMessage/` with the template files (`TheLastMessage.Build.cs`, `TheLastMessage.cpp`, `TheLastMessage.h`, unchanged), plus `Core/` (M1 framework classes), `Tests/` (automation test), and `TheLastMessage.Target.cs` / `TheLastMessageEditor.Target.cs` in `Source/`. Dependencies: `Core`, `CoreUObject`, `Engine`, `InputCore`, `EnhancedInput`. Headers use relative includes because the module root is not on the include path.
 
 `Config/DefaultEngine.ini` still has `GameDefaultMap=/Engine/Maps/Templates/OpenWorld` (not yet pointed at a project map).
 
@@ -169,8 +176,8 @@ C++ module (unchanged template): `Source/TheLastMessage/` with `TheLastMessage.B
 
 | File | Purpose | Status |
 |---|---|---|
-| `PROJECT_PROGRESS.md` | Project and engineering status | ✅ updated, ⏳ uncommitted |
-| `GAME_DESIGN_DOCUMENT.md` | Creative and narrative design (v0.3) | ✅ created, ⏳ uncommitted |
+| `PROJECT_PROGRESS.md` | Project and engineering status | ✅ updated for M1, ⏳ uncommitted |
+| `GAME_DESIGN_DOCUMENT.md` | Creative and narrative design (v0.3) | ✅ committed (`e560345`); M1 factual notes in Sections 11.1 and 12, ⏳ uncommitted |
 
 **`GAME_DESIGN_DOCUMENT.md` structure:** tag legend (✅ confirmed, 💡 recommended, ❓ undecided, ⚙️ technical fact) · 1 Identity and vision · 2 Platform and scope · 3 Characters · 4 Story (opening hook, timeline, central revelation, central question, undefined elements) · 5 Chapter structure · 6 Endings (with 6.1 Ending 1 vs Ending 5) · 7 Hidden universe direction · 8 Gameplay · 9 Narrative variables and branching · 10 Visual and audio direction · 11 Technical state and architecture goals · 12 Development progress · 13 Open questions.
 
@@ -185,18 +192,57 @@ C++ module (unchanged template): `Source/TheLastMessage/` with `TheLastMessage.B
 - ✅ Project setup, MCP automation pipeline proven, Content folder structure created and committed, Git LFS configured and committed.
 - ✅ Story foundation documented in the GDD, including the Ending 1 / Ending 5 distinction and the hidden-universe direction.
 - 💡 Technical recommendations awaiting confirmation: Alex throughout all seven chapters; separate maps for major chapters with shared systems; automatic checkpoints plus manual saves; no conventional combat; persistent choices and evidence flags; no multiplayer.
-- 📝 Not started: C++ architecture, gameplay systems, characters, environments, narrative content, UI, audio, the vertical slice.
+- ✅ Gameplay architecture reviewed and approved (see Section 14.1); roadmap M1–M10.
+- ✅ **M1 complete** (framework skeleton and first-person walk/look); see Section 14.
+- 📝 Not started: M2 onward (narrative state, save/load, interaction, investigation, chapters, dialogue, endings, UI), characters, environments, narrative content, audio, the vertical slice.
 
 ## 13. Next steps when development resumes
 
-1. **Review and approve** `GAME_DESIGN_DOCUMENT.md` (v0.3) and this file, then commit and push them (not done yet).
-2. **Start the Unreal Editor** with `TheLastMessage.uproject` open so the MCP server (`http://127.0.0.1:8000/mcp`) is reachable; verify with a read-only call.
+1. **Review and approve the M1 close-out**, then (on separate explicit approval) commit and push M1: docs, source, input assets, Blueprints and the test map (first LFS-tracked assets). No Claude co-author line.
+2. **Await approval to begin M2** (Narrative State subsystem + GameplayTags). Start the Unreal Editor with the project open so the MCP server (`http://127.0.0.1:8000/mcp`) is reachable.
 3. **Confirm the 💡 recommendations** in GDD Section 8.2.
 4. **Decide the vertical-slice scope** (which part of the story the 20–30 minute slice covers).
 5. **Decide ending conditions and variable design** (GDD Sections 6 and 9), including what qualifies a player for Ending 5 and Ending 1, which discoveries they share, and whether Endings 2, 3 and 4 are also mutually exclusive with them. Decide the "true ending" only after all five endings and their conditions are designed.
 6. **Plan the C++ architecture** as its own step (planned, not started). Proposed layout under `Source/TheLastMessage/`: Core, Gameplay, Interaction, Narrative, Data. It needs steps 3 to 5 first, because the flag, choice and ending systems depend on them.
-7. **Confirm the exact Visual Studio version** and update section 4.
+7. ~~Confirm the exact Visual Studio version~~ (done, Section 4).
 8. **Later, not now:** point `GameDefaultMap` at a project map, move `M_TestCube` / `SM_TestCube` into `Dev/Testing` if desired, create `Ch01_...` folders when Chapter 1 begins, and define the hidden-universe material only when the project owner decides to.
+
+## 14. Milestone M1 — First-person framework and movement prototype ✅ COMPLETE
+
+### 14.1 Roadmap and architecture (✅ approved)
+Roadmap: M1 framework · M2 Narrative State (+GameplayTags) · M3 Save/Load · M4 Interaction · M5 Investigation · M6 Chapters · M7 Dialogue · M8 Endings structure · M9 UI · M10 vertical slice. Key approved decisions: no custom GameInstance/GameState; game-instance subsystems for narrative/investigation/chapter/ending/save state; dialogue as a world subsystem; stateless rules library; Primary Data Assets for content; hybrid FName + GameplayTag ids; framed, verified two-generation save with up to 3 retries; no external dialogue plugin.
+
+### 14.2 C++ framework (`Source/TheLastMessage/Core/`)
+- `ATLMGameMode` (`AGameModeBase`): defaults `DefaultPawnClass = ATLMPlayerCharacter`, `PlayerControllerClass = ATLMPlayerController`.
+- `ATLMPlayerController` (`APlayerController`): `DefaultMappingContext` (EditDefaultsOnly) added through `UEnhancedInputLocalPlayerSubsystem` in `BeginPlay` for the local controller; warns if unassigned.
+- `ATLMPlayerCharacter` (`ACharacter`): `FirstPersonCamera` attached to the capsule at eye height with `bUsePawnControlRotation`; yaw follows the controller, pitch is camera-only; `MoveAction` / `LookAction` bound to `Move` / `Look`. Walk and look only.
+- `Tests/TLMFrameworkTests.cpp`: `TheLastMessage.Framework.ClassDefaults`.
+
+### 14.3 Input assets (`/Game/Core/Input/`)
+- `IA_Move`, `IA_Look`: value type Axis2D.
+- `IMC_Default`, five mappings: W → `IA_Move` (Swizzle YXZ); S → `IA_Move` (Swizzle YXZ + Negate all); A → `IA_Move` (Negate all); D → `IA_Move` (none); Mouse2D → `IA_Look` (Negate Y only, so mouse up looks up).
+
+### 14.4 Blueprints (`/Game/Core/Blueprints/`)
+- `BP_TLMGameMode` (parent `ATLMGameMode`): `DefaultPawnClass = BP_TLMPlayerCharacter_C`, `PlayerControllerClass = BP_TLMPlayerController_C`.
+- `BP_TLMPlayerController` (parent `ATLMPlayerController`): `DefaultMappingContext = IMC_Default`, priority 0.
+- `BP_TLMPlayerCharacter` (parent `ATLMPlayerCharacter`): `MoveAction = IA_Move`, `LookAction = IA_Look`.
+
+### 14.5 Test map
+`/Game/Dev/Maps/L_Dev_Movement`: built from the Basic template; one `PlayerStart_0` at (0, 0, 92); finite floor `Floor_0` about 8000 × 8000 units with `BlockAllDynamic` collision; template sky and lighting; World Settings GameMode Override = `BP_TLMGameMode`. The floor is finite by design, so walking off the edge is expected.
+
+### 14.6 Verification results
+- Build: Development Editor Win64 succeeded (VS 2026 toolchain).
+- Class registration and inheritance: the three C++ classes and the three Blueprint subclasses resolve with the expected parents.
+- Automation test `TheLastMessage.Framework.ClassDefaults`: **passed** (1 passed, 0 failed; re-run during final verification).
+- PIE on `L_Dev_Movement`: Game class `BP_TLMGameMode_C`; no runtime errors or warnings in the log.
+- **Manual test (project owner):** WASD works in all four directions; mouse look smooth; mouse Y not inverted (mouse up looks up); sensitivity comfortable, no adjustment needed; character spawning successful; walking off the platform was intentional.
+- Unchanged: `L_Prototype`, `M_TestCube`, `Build.cs`, `Config/`, `.uproject`, `.vsconfig`, plugins.
+
+### 14.7 Limitations and deferred work
+- No sprint, crouch, jump or gamepad (❓ undecided in the GDD). Mouse sensitivity is a fixed default; no settings UI.
+- `GameDefaultMap` still points at an engine template map; the project's own GameMode applies only via the `L_Dev_Movement` override (no project-wide default GameMode set).
+- The `StartPIE` MCP call reports "PIE ended before warmup completed" although PIE starts; the first attempt ended on its own after about 20 s with no logged error (cause not established). Pawn, controller and possession were confirmed by manual play rather than by log or MCP, because PIE-world objects are not reachable through the object tools.
+- The M1 work is not yet committed.
 
 ---
 

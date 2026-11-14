@@ -315,7 +315,8 @@ These are **narrative design, not implemented systems**. No code, assets or data
 ## 11. Technical state and architecture goals
 
 ### 11.1 Current state (⚙️ TECHNICAL FACT)
-- Unreal Engine 5.8.4, one C++ module `TheLastMessage` (empty template: `TheLastMessage.h/.cpp`, `Build.cs`, two `Target.cs`). Dependencies: `Core`, `CoreUObject`, `Engine`, `InputCore`, `EnhancedInput`.
+- Unreal Engine 5.8.4, one C++ module `TheLastMessage` (template files plus the M1 framework classes `ATLMGameMode`, `ATLMPlayerController`, `ATLMPlayerCharacter` under `Source/TheLastMessage/Core/`, and one automation test under `Tests/`). Dependencies: `Core`, `CoreUObject`, `Engine`, `InputCore`, `EnhancedInput`.
+- M1 first-person framework and walk/look movement prototype is complete and manually tested (see `PROJECT_PROGRESS.md` Section 14). Movement abilities beyond walking (sprint, crouch, jump) and gamepad support remain ❓ undecided.
 - Plugins enabled: `ModelContextProtocol`, `AllToolsets`, `ModelingToolsEditorMode` (editor only).
 - Content assets: `/Game/Maps/L_Prototype` (contains test actor `SM_TestCube`) and `/Game/Materials/M_TestCube`.
 - The approved Content folder structure exists (46 leaf folders), preserved in Git with `.gitkeep` files.
@@ -326,7 +327,7 @@ These are **narrative design, not implemented systems**. No code, assets or data
 - **C++** owns the rules (chapter state, save/load, choice and flag tracking, ending resolution, interaction interface, evidence logic, base framework classes).
 - **Data Assets** own content (chapters, items, evidence, dialogue, endings).
 - **Blueprints** subclass C++ classes and own presentation and scene-specific glue.
-- Naming: `BP_`, `SM_`, `M_`, `MI_`, `T_`, `WBP_`, `DA_`, `L_`, `LS_`.
+- Naming: `BP_`, `SM_`, `M_`, `MI_`, `T_`, `WBP_`, `DA_`, `L_`, `LS_`, `IA_` (Input Action), `IMC_` (Input Mapping Context). `IA_` and `IMC_` were added with the M1 approval.
 
 ### 11.3 C++ architecture
 Not yet designed. It is planned as a separate step and depends on the decisions in Section 13.
@@ -338,7 +339,8 @@ Not yet designed. It is planned as a separate step and depends on the decisions 
 - ✅ Direction for Ending 5 and the hidden universe recorded (Sections 6.1 and 7). The hidden world itself is intentionally undefined.
 - ✅ Ending 1 and Ending 5 confirmed as mutually exclusive final outcomes; Ending 5 may (not must) reveal who falsified the records.
 - ❓ True ending intentionally left undesignated until all five endings and their conditions are designed.
-- 📝 Not started: C++ architecture, gameplay systems, characters, environments, narrative content, UI, audio.
+- ✅ M1 (first-person framework and movement prototype) complete: game mode, player controller, first-person character, Enhanced Input walk and look, and the `L_Dev_Movement` test map.
+- 📝 Not started: narrative state, save/load, interaction, investigation, chapters, dialogue, endings, UI, characters, environments, narrative content, audio.
 - 📝 Vertical slice (20–30 minutes) is the initial target but has not been scoped.
 
 ## 13. Open questions for the project owner
